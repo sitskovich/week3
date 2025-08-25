@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STEM Presentation</title>
+    <!-- Use Tailwind CSS for easy styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 p-6">
+
+    <!-- Main presentation card -->
+    <div id="presentation-card" class="bg-white p-8 rounded-2xl shadow-xl max-w-4xl w-full text-center transition-all duration-500 ease-in-out">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-4xl font-extrabold text-indigo-800">STEM Presentation</h1>
+            <div id="day-display" class="text-xl font-semibold text-gray-600"></div>
+        </div>
+        
+        <!-- Slide content will be rendered here -->
+        <div id="slide-content" class="mb-6">
+            <!-- Content will be injected by JavaScript -->
+        </div>
+
+        <!-- Timer and interactive controls -->
+        <div id="interactive-controls" class="hidden flex-col items-center p-4 bg-red-100 rounded-lg">
+            <div class="flex items-center justify-center mb-4">
+                <button id="timer-button" class="px-6 py-2 rounded-full font-bold text-white transition duration-300 bg-green-500 hover:bg-green-600">
+                    Start Timer
+                </button>
+                <span id="timer-display" class="text-4xl ml-4 font-mono text-gray-800 w-20 text-center">60s</span>
+            </div>
+            <button id="timer-reset-button" class="px-4 py-2 rounded-full font-bold text-sm text-gray-700 bg-gray-200 hover:bg-gray-300 transition-colors">
+                Reset Timer
+            </button>
+        </div>
+
+        <!-- Navigation buttons -->
+        <div class="flex justify-between items-center mt-6">
+            <button id="prev-button" class="px-6 py-3 rounded-full font-bold text-white transition-all duration-300 transform hover:scale-105 bg-gray-400 hover:bg-gray-500">
+                Previous
+            </button>
+            <div id="slide-counter" class="text-xl font-semibold text-gray-500"></div>
+            <button id="next-button" class="px-6 py-3 rounded-full font-bold text-white transition-all duration-300 transform hover:scale-105 bg-purple-600 hover:bg-purple-700">
+                Next
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Store all presentation slides in a JavaScript array.
+        const slides = [
+            // DAY 1: Using Energy Transformations
+            {
+                title: "Slide 1: Welcome!",
+                content: `
+                    <h2 class="text-3xl font-bold mb-4 text-emerald-600">✨ Let's Go on a STEM Adventure! ✨</h2>
+                    <p class="text-gray-700">
+                        Welcome, amazing scientists and engineers! Today, we're going on a mission to an imaginary spaceship that's in danger!
+                        Our job is to figure out how to warn the astronauts about a possible asteroid collision.
+                    </p>
+                    <div class="mt-4 p-4 bg-emerald-100 rounded-lg">
+                        <h3 class="text-xl font-semibold mb-2 text-emerald-800">🚀 Warm-up Challenge!</h3>
+                        <p>
+                            Hold up a flashlight. What gives the flashlight the power to shine?
+                            Think-Pair-Share: Turn to a partner and talk about it for just one minute. What makes the light turn on?
+                        </p>
+                    </div>
+                `,
+                day: 1
+            },
+            {
+                title: "Slide 2: Energy All Around Us",
+                content: `
+                    <h2 class="text-3xl font-bold mb-4 text-emerald-600">What is Energy? 💡</h2>
+                    <p class="text-gray-700">
+                        Energy is the power that makes things happen! It comes in different forms, like light energy, sound energy, and motion energy.
+                        Did you know that energy can never be created or destroyed? It just changes from one form to another! That's called a <b>transformation</b>.
+                    </p>
+                    <div class="mt-4 p-4 bg-yellow-100 rounded-lg">
+                        <h3 class="text-xl font-semibold mb-2 text-yellow-800">Visuals:</h3>
+                        <p>
+                            Show a picture of a solar panel. Explain how it takes light energy from the sun and turns it into electrical energy to power a house.
+                            You could also show a picture of a person riding a bicycle. The energy from their food turns into motion energy!
+                        </p>
+                    </div>
+                `,
+                day: 1
+            },
+            {
+                title: "Slide 3: Energy in a Collision",
+                content: `
+                    <h2 class="text-3xl font-bold mb-4 text-emerald-600">BAM! Energy in a Crash! 💥</h2>
+                    <p class="text-gray-700">
+                        When two things collide, like our spaceship and an asteroid, energy is transferred.
+                        The energy of the moving objects changes into other forms. A loud crash makes <b>sound energy</b>, and a bright flash makes <b>light energy</b>!
+                    </p>
+                    <div class="mt-4 p-4 bg-red-100 rounded-lg">
+                        <h3 class="text-xl font-semibold mb-2 text-red-800">🛠️ Interactive Challenge: Build a Bumper!</h3>
+                        <p>
+                            Your mission, should you choose to accept it, is to build a simple bumper out of building blocks or Vex Go parts.
+                            Your challenge is to build a wall that can stop a rolling toy car. Watch how the energy from the car transfers to your wall!
+                        </p>
+                    </div>
+                `,
+                day: 1,
+                hasTimer: true
+            },
+            {
+                title: "Slide 4: Real-World Warning Systems",
+                content: `
+                    <h2 class="text-3xl font-bold mb-4 text-emerald-600">Making an Awesome Alarm! 🚨</h2>
+                    <p class="text-gray-700">
+                        The warning system we're building is a lot like things we see every day!
+                        Think about a smoke detector. It senses smoke (a form of energy change) and transforms that information into a loud sound (another energy form) to warn us!
+                        Emergency lights on a fire truck or ambulance are another great example.
+                    </p>
+                    <div class="mt-4 p-4 bg-cyan-100 rounded-lg">
+                        <h3 class="text-xl font-semibold mb-2 text-cyan-800">💡 Let's Brainstorm!</h3>
+                        <p>
+                            On a whiteboard, let's list different kinds of alarms we've seen. How do they work? What kind of energy do they use and create?
+                        </p>
+                    </div>
+                `,
+                day: 1
+            },
+            {
+                title: "Slide 5: Day 1 Wrap-up",
+                content: `
+                    <h2 class="text-3xl font-bold mb-4 text-emerald-600">Recap: Day 1 Mission Complete! ✅</h2>
+                    <p class="text-gray-700">
+                        Today, we learned about <b>energy transformations</b>! We know that energy can't be created or destroyed, but it can change from one form to another.
+                        We also saw how this happens in collisions and in real-world warning systems.
+                    </p>
+                    <div class="mt-4 p-4 bg-purple-100 rounded-lg">
+                        <h3 class="text-xl font-semibold mb-2 text-purple-800">Did You Know? 🤔</h3>
+                        <p>
+                            The energy released from a lightning bolt is enough to power a 100-watt light bulb for more than three months!
+                        </p>
+                    </div>
+                `,
+                day: 1
+            },
+            // DAY 2: Communicating Using Wave Energy
+            {
+                title: "Slide 6: Welcome Back!",
+                content: `
+                    <h2 class="text-3xl font-bold mb-4 text-indigo-600">Hello, Wavelength Warriors! 🌊</h2>
+                    <p class="text-gray-700">
+                        Yesterday we talked about energy. Today, we're going to use energy to communicate over a distance.
+                        Our mission is to create an emergency signaling system that uses light or sound to get a message to people far away.
+                    </p>
+                    <div class="mt-4 p-4 bg-indigo-100 rounded-lg">
+                        <h3 class="text-xl font-semibold mb-2 text-indigo-800">👂 Warm-up: Quick Poll!</h3>
+                        <p>
+                            Show of hands: Who has ever used a walkie-talkie? What about a laser pointer?
+                            How do these things send a message?
+                        </p>
+                    </div>
+                `,
+                day: 2
+            },
+            {
+                title: "Slide 7: Waves are Everywhere!",
+                content: `
+                    <h2 class="text-3xl font-bold mb-4 text-indigo-600">All About Waves! 🌀</h2>
+                    <p class="text-gray-700">
+                        Waves are a special kind of motion that can carry energy from one place to another.
+                        Sound waves let us hear music, and light waves let us see the world!
+                        Every wave has a <b>wavelength</b> (the distance between waves) and an <b>amplitude</b> (how tall the wave is).
+                    </p>
+                    <div class="mt-4 p-4 bg-sky-100 rounded-lg">
+                        <h3 class="text-xl font-semibold mb-2 text-sky-800">Visuals:</h3>
+                        <p>
+                            Draw two waves on the whiteboard. One with a long wavelength and small amplitude, and one with a short wavelength and large amplitude.
+                            Ask students to describe the differences they see.
+                        </p>
+                    </div>
+                `,
+                day: 2
+            },
+            {
+                title: "Slide 8: Signaling with Light and Sound",
+                content: `
+                    <h2 class="text-3xl font-bold mb-4 text-indigo-600">Sending a Message! 📢</h2>
+                    <p class="text-gray-700">
+                        For our emergency signal, we need to choose between light and sound.
+                        Light waves travel incredibly fast, and we can use mirrors or flashlights to send signals, like Morse code.
+                        Sound waves can travel through the air, and we can use loud noises or different patterns of sound to communicate.
+                    </p>
+                    <div class="mt-4 p-4 bg-orange-100 rounded-lg">
+                        <h3 class="text-xl font-semibold mb-2 text-orange-800">🛠️ Interactive Challenge: Make a Signal!</h3>
+                        <p>
+                            Let's make a simple sound or light signal. Grab your maracas or flashlights!
+                            Can you create a code using short and long sounds, or short and long flashes? Try to send a secret message to a friend across the room.
+                        </p>
+                    </div>
+                `,
+                day: 2,
+                hasTimer: true
+            },
+            {
+                title: "Slide 9: Real-World Communication",
+                content: `
+                    <h2 class="text-3xl font-bold mb-4 text-indigo-600">Messages Everywhere! 📱</h2>
+                    <p class="text-gray-700">
+                        All of our modern technology, like cell phones and the internet, uses waves to communicate!
+                        When you send a text message, it's turned into a digital signal that travels as a wave through the air to a cell tower and then to your friend's phone.
+                        Our brains even use tiny electrical waves to send messages to our eyes and ears!
+                    </p>
+                    <div class="mt-4 p-4 bg-lime-100 rounded-lg">
+                        <h3 class="text-xl font-semibold mb-2 text-lime-800">🌐 Connection:</h3>
+                        <p>
+                            Talk about how light reflects off objects and enters our eyes. What happens when you look in a mirror?
+                        </p>
+                    </div>
+                `,
+                day: 2
+            },
+            {
+                title: "Slide 10: Day 2 Wrap-up",
+                content: `
+                    <h2 class="text-3xl font-bold mb-4 text-indigo-600">Recap: Day 2 Mission Accomplished! ✅</h2>
+                    <p class="text-gray-700">
+                        You are now experts at using waves to communicate! We learned about <b>wavelength</b> and <b>amplitude</b>, and how light and sound waves can carry important messages over a distance.
+                    </p>
+                    <div class="mt-4 p-4 bg-teal-100 rounded-lg">
+                        <h3 class="text-xl font-semibold mb-2 text-teal-800">Did You Know? 🤔</h3>
+                        <p>
+                            The sound of a whale's call can travel for hundreds of miles underwater! That's because sound travels faster in water than in the air.
+                        </p>
+                    </div>
+                `,
+                day: 2
+            }
+        ];
+
+        // JavaScript logic for the presentation
+        let currentSlideIndex = 0;
+        let timer = 60;
+        let timerInterval = null;
+        let isTimerRunning = false;
+
+        // Get DOM elements
+        const slideContentDiv = document.getElementById('slide-content');
+        const slideCounterSpan = document.getElementById('slide-counter');
+        const dayDisplayDiv = document.getElementById('day-display');
+        const prevButton = document.getElementById('prev-button');
+        const nextButton = document.getElementById('next-button');
+        const timerControls = document.getElementById('interactive-controls');
+        const timerButton = document.getElementById('timer-button');
+        const timerDisplay = document.getElementById('timer-display');
+        const timerResetButton = document.getElementById('timer-reset-button');
+
+        // Function to render the current slide
+        function showSlide(index) {
+            const slide = slides[index];
+            slideContentDiv.innerHTML = slide.content;
+            slideCounterSpan.textContent = `Slide ${index + 1} of ${slides.length}`;
+            dayDisplayDiv.textContent = `Day ${slide.day}`;
+            
+            // Show or hide the timer based on the slide
+            if (slide.hasTimer) {
+                timerControls.style.display = 'flex';
+            } else {
+                timerControls.style.display = 'none';
+                resetTimer();
+            }
+
+            // Update button states
+            prevButton.disabled = index === 0;
+            nextButton.disabled = index === slides.length - 1;
+            prevButton.style.backgroundColor = index === 0 ? '#9CA3AF' : '#6B7280';
+            nextButton.style.backgroundColor = index === slides.length - 1 ? '#9CA3AF' : '#8B5CF6';
+        }
+
+        // Timer functions
+        function startTimer() {
+            if (!isTimerRunning) {
+                isTimerRunning = true;
+                timerButton.textContent = 'Pause Timer';
+                timerButton.style.backgroundColor = '#EF4444';
+                timerInterval = setInterval(() => {
+                    if (timer > 0) {
+                        timer--;
+                        timerDisplay.textContent = `${timer}s`;
+                    } else {
+                        stopTimer();
+                    }
+                }, 1000);
+            } else {
+                stopTimer();
+            }
+        }
+
+        function stopTimer() {
+            isTimerRunning = false;
+            timerButton.textContent = 'Start Timer';
+            timerButton.style.backgroundColor = '#22C55E';
+            clearInterval(timerInterval);
+        }
+
+        function resetTimer() {
+            stopTimer();
+            timer = 60;
+            timerDisplay.textContent = `${timer}s`;
+        }
+
+        // Event listeners for navigation and timer
+        prevButton.addEventListener('click', () => {
+            if (currentSlideIndex > 0) {
+                currentSlideIndex--;
+                showSlide(currentSlideIndex);
+            }
+        });
+
+        nextButton.addEventListener('click', () => {
+            if (currentSlideIndex < slides.length - 1) {
+                currentSlideIndex++;
+                showSlide(currentSlideIndex);
+            }
+        });
+
+        timerButton.addEventListener('click', startTimer);
+        timerResetButton.addEventListener('click', resetTimer);
+
+        // Show the first slide when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            showSlide(currentSlideIndex);
+        });
+    </script>
+</body>
+</html>
