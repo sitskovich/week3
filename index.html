@@ -1,330 +1,296 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STEM Presentation</title>
-    <!-- Use Tailwind CSS for easy styling -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Canvas 3 & 4 — Full Deck (Timers + Blank Board)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    html, body { height:100%; }
+    body { font-family:'Inter', sans-serif; }
+    .deck { width:100vw; height:100vh; display:flex; flex-direction:column; }
+    .viewport { flex:1; display:flex; align-items:center; justify-content:center; text-align:center; padding:clamp(12px,3.5vh,32px); }
+    .slide h2 { font-weight:800; font-size:clamp(28px,4vw,44px); line-height:1.15; }
+    .slide p, .slide li { font-size:clamp(18px,2.2vw,24px); line-height:1.45; }
+    .slide ul { max-width:1100px; margin:1rem auto 0; text-align:left; }
+    .board { width:min(92vw,1400px); height:min(58vh,700px); border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,.12); }
+  </style>
 </head>
-<body class="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 p-6">
+<body class="bg-gradient-to-br from-blue-50 to-purple-50">
 
-    <!-- Main presentation card -->
-    <div id="presentation-card" class="bg-white p-8 rounded-2xl shadow-xl max-w-4xl w-full text-center transition-all duration-500 ease-in-out">
-        <div class="flex justify-between items-center mb-6">
-            <h1 class="text-4xl font-extrabold text-indigo-800">STEM Presentation</h1>
-            <div id="day-display" class="text-xl font-semibold text-gray-600"></div>
-        </div>
-        
-        <!-- Slide content will be rendered here -->
-        <div id="slide-content" class="mb-6">
-            <!-- Content will be injected by JavaScript -->
-        </div>
+  <div id="presentation-card" class="deck">
+    <!-- Slide viewport (fills remaining height) -->
+    <div id="slide-content" class="viewport"></div>
 
-        <!-- Timer and interactive controls -->
-        <div id="interactive-controls" class="hidden flex-col items-center p-4 bg-red-100 rounded-lg">
-            <div class="flex items-center justify-center mb-4">
-                <button id="timer-button" class="px-6 py-2 rounded-full font-bold text-white transition duration-300 bg-green-500 hover:bg-green-600">
-                    Start Timer
-                </button>
-                <span id="timer-display" class="text-4xl ml-4 font-mono text-gray-800 w-20 text-center">60s</span>
-            </div>
-            <button id="timer-reset-button" class="px-4 py-2 rounded-full font-bold text-sm text-gray-700 bg-gray-200 hover:bg-gray-300 transition-colors">
-                Reset Timer
-            </button>
+    <!-- Sliding Timer & controls (shown only on timed slides) -->
+    <div id="interactive-controls" class="hidden flex-col items-center gap-3 mx-[clamp(12px,3.5vh,32px)] mb-[clamp(12px,3.5vh,32px)] p-3 bg-indigo-50 rounded-xl border border-indigo-100">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-center gap-4 w-full">
+        <div class="flex items-center gap-3 justify-center">
+          <label for="minutes-range" class="text-sm font-semibold text-indigo-800">Minutes</label>
+          <input id="minutes-range" type="range" min="1" max="30" value="5" class="w-56">
+          <span id="minutes-label" class="text-sm font-bold text-indigo-900">5</span>
         </div>
-
-        <!-- Navigation buttons -->
-        <div class="flex justify-between items-center mt-6">
-            <button id="prev-button" class="px-6 py-3 rounded-full font-bold text-white transition-all duration-300 transform hover:scale-105 bg-gray-400 hover:bg-gray-500">
-                Previous
-            </button>
-            <div id="slide-counter" class="text-xl font-semibold text-gray-500"></div>
-            <button id="next-button" class="px-6 py-3 rounded-full font-bold text-white transition-all duration-300 transform hover:scale-105 bg-purple-600 hover:bg-purple-700">
-                Next
-            </button>
+        <div class="flex items-center justify-center gap-3">
+          <button id="timer-button" class="px-6 py-2 rounded-full font-bold text-white transition bg-green-500 hover:bg-green-600">Start</button>
+          <span id="timer-display" class="text-4xl font-mono text-gray-800 w-24 text-center">5:00</span>
+          <button id="timer-reset-button" class="px-4 py-2 rounded-full font-bold text-sm text-gray-700 bg-gray-200 hover:bg-gray-300">Reset</button>
         </div>
+      </div>
     </div>
 
-    <script>
-        // Store all presentation slides in a JavaScript array.
-        const slides = [
-            // DAY 1: Using Energy Transformations
-            {
-                title: "Slide 1: Welcome!",
-                content: `
-                    <h2 class="text-3xl font-bold mb-4 text-emerald-600">✨ Let's Go on a STEM Adventure! ✨</h2>
-                    <p class="text-gray-700">
-                        Welcome, amazing scientists and engineers! Today, we're going on a mission to an imaginary spaceship that's in danger!
-                        Our job is to figure out how to warn the astronauts about a possible asteroid collision.
-                    </p>
-                    <div class="mt-4 p-4 bg-emerald-100 rounded-lg">
-                        <h3 class="text-xl font-semibold mb-2 text-emerald-800">🚀 Warm-up Challenge!</h3>
-                        <p>
-                            Hold up a flashlight. What gives the flashlight the power to shine?
-                            Think-Pair-Share: Turn to a partner and talk about it for just one minute. What makes the light turn on?
-                        </p>
-                    </div>
-                `,
-                day: 1
-            },
-            {
-                title: "Slide 2: Energy All Around Us",
-                content: `
-                    <h2 class="text-3xl font-bold mb-4 text-emerald-600">What is Energy? 💡</h2>
-                    <p class="text-gray-700">
-                        Energy is the power that makes things happen! It comes in different forms, like light energy, sound energy, and motion energy.
-                        Did you know that energy can never be created or destroyed? It just changes from one form to another! That's called a <b>transformation</b>.
-                    </p>
-                    <div class="mt-4 p-4 bg-yellow-100 rounded-lg">
-                        <h3 class="text-xl font-semibold mb-2 text-yellow-800">Visuals:</h3>
-                        <p>
-                            Show a picture of a solar panel. Explain how it takes light energy from the sun and turns it into electrical energy to power a house.
-                            You could also show a picture of a person riding a bicycle. The energy from their food turns into motion energy!
-                        </p>
-                    </div>
-                `,
-                day: 1
-            },
-            {
-                title: "Slide 3: Energy in a Collision",
-                content: `
-                    <h2 class="text-3xl font-bold mb-4 text-emerald-600">BAM! Energy in a Crash! 💥</h2>
-                    <p class="text-gray-700">
-                        When two things collide, like our spaceship and an asteroid, energy is transferred.
-                        The energy of the moving objects changes into other forms. A loud crash makes <b>sound energy</b>, and a bright flash makes <b>light energy</b>!
-                    </p>
-                    <div class="mt-4 p-4 bg-red-100 rounded-lg">
-                        <h3 class="text-xl font-semibold mb-2 text-red-800">🛠️ Interactive Challenge: Build a Bumper!</h3>
-                        <p>
-                            Your mission, should you choose to accept it, is to build a simple bumper out of building blocks or Vex Go parts.
-                            Your challenge is to build a wall that can stop a rolling toy car. Watch how the energy from the car transfers to your wall!
-                        </p>
-                    </div>
-                `,
-                day: 1,
-                hasTimer: true
-            },
-            {
-                title: "Slide 4: Real-World Warning Systems",
-                content: `
-                    <h2 class="text-3xl font-bold mb-4 text-emerald-600">Making an Awesome Alarm! 🚨</h2>
-                    <p class="text-gray-700">
-                        The warning system we're building is a lot like things we see every day!
-                        Think about a smoke detector. It senses smoke (a form of energy change) and transforms that information into a loud sound (another energy form) to warn us!
-                        Emergency lights on a fire truck or ambulance are another great example.
-                    </p>
-                    <div class="mt-4 p-4 bg-cyan-100 rounded-lg">
-                        <h3 class="text-xl font-semibold mb-2 text-cyan-800">💡 Let's Brainstorm!</h3>
-                        <p>
-                            On a whiteboard, let's list different kinds of alarms we've seen. How do they work? What kind of energy do they use and create?
-                        </p>
-                    </div>
-                `,
-                day: 1
-            },
-            {
-                title: "Slide 5: Day 1 Wrap-up",
-                content: `
-                    <h2 class="text-3xl font-bold mb-4 text-emerald-600">Recap: Day 1 Mission Complete! ✅</h2>
-                    <p class="text-gray-700">
-                        Today, we learned about <b>energy transformations</b>! We know that energy can't be created or destroyed, but it can change from one form to another.
-                        We also saw how this happens in collisions and in real-world warning systems.
-                    </p>
-                    <div class="mt-4 p-4 bg-purple-100 rounded-lg">
-                        <h3 class="text-xl font-semibold mb-2 text-purple-800">Did You Know? 🤔</h3>
-                        <p>
-                            The energy released from a lightning bolt is enough to power a 100-watt light bulb for more than three months!
-                        </p>
-                    </div>
-                `,
-                day: 1
-            },
-            // DAY 2: Communicating Using Wave Energy
-            {
-                title: "Slide 6: Welcome Back!",
-                content: `
-                    <h2 class="text-3xl font-bold mb-4 text-indigo-600">Hello, Wavelength Warriors! 🌊</h2>
-                    <p class="text-gray-700">
-                        Yesterday we talked about energy. Today, we're going to use energy to communicate over a distance.
-                        Our mission is to create an emergency signaling system that uses light or sound to get a message to people far away.
-                    </p>
-                    <div class="mt-4 p-4 bg-indigo-100 rounded-lg">
-                        <h3 class="text-xl font-semibold mb-2 text-indigo-800">👂 Warm-up: Quick Poll!</h3>
-                        <p>
-                            Show of hands: Who has ever used a walkie-talkie? What about a laser pointer?
-                            How do these things send a message?
-                        </p>
-                    </div>
-                `,
-                day: 2
-            },
-            {
-                title: "Slide 7: Waves are Everywhere!",
-                content: `
-                    <h2 class="text-3xl font-bold mb-4 text-indigo-600">All About Waves! 🌀</h2>
-                    <p class="text-gray-700">
-                        Waves are a special kind of motion that can carry energy from one place to another.
-                        Sound waves let us hear music, and light waves let us see the world!
-                        Every wave has a <b>wavelength</b> (the distance between waves) and an <b>amplitude</b> (how tall the wave is).
-                    </p>
-                    <div class="mt-4 p-4 bg-sky-100 rounded-lg">
-                        <h3 class="text-xl font-semibold mb-2 text-sky-800">Visuals:</h3>
-                        <p>
-                            Draw two waves on the whiteboard. One with a long wavelength and small amplitude, and one with a short wavelength and large amplitude.
-                            Ask students to describe the differences they see.
-                        </p>
-                    </div>
-                `,
-                day: 2
-            },
-            {
-                title: "Slide 8: Signaling with Light and Sound",
-                content: `
-                    <h2 class="text-3xl font-bold mb-4 text-indigo-600">Sending a Message! 📢</h2>
-                    <p class="text-gray-700">
-                        For our emergency signal, we need to choose between light and sound.
-                        Light waves travel incredibly fast, and we can use mirrors or flashlights to send signals, like Morse code.
-                        Sound waves can travel through the air, and we can use loud noises or different patterns of sound to communicate.
-                    </p>
-                    <div class="mt-4 p-4 bg-orange-100 rounded-lg">
-                        <h3 class="text-xl font-semibold mb-2 text-orange-800">🛠️ Interactive Challenge: Make a Signal!</h3>
-                        <p>
-                            Let's make a simple sound or light signal. Grab your maracas or flashlights!
-                            Can you create a code using short and long sounds, or short and long flashes? Try to send a secret message to a friend across the room.
-                        </p>
-                    </div>
-                `,
-                day: 2,
-                hasTimer: true
-            },
-            {
-                title: "Slide 9: Real-World Communication",
-                content: `
-                    <h2 class="text-3xl font-bold mb-4 text-indigo-600">Messages Everywhere! 📱</h2>
-                    <p class="text-gray-700">
-                        All of our modern technology, like cell phones and the internet, uses waves to communicate!
-                        When you send a text message, it's turned into a digital signal that travels as a wave through the air to a cell tower and then to your friend's phone.
-                        Our brains even use tiny electrical waves to send messages to our eyes and ears!
-                    </p>
-                    <div class="mt-4 p-4 bg-lime-100 rounded-lg">
-                        <h3 class="text-xl font-semibold mb-2 text-lime-800">🌐 Connection:</h3>
-                        <p>
-                            Talk about how light reflects off objects and enters our eyes. What happens when you look in a mirror?
-                        </p>
-                    </div>
-                `,
-                day: 2
-            },
-            {
-                title: "Slide 10: Day 2 Wrap-up",
-                content: `
-                    <h2 class="text-3xl font-bold mb-4 text-indigo-600">Recap: Day 2 Mission Accomplished! ✅</h2>
-                    <p class="text-gray-700">
-                        You are now experts at using waves to communicate! We learned about <b>wavelength</b> and <b>amplitude</b>, and how light and sound waves can carry important messages over a distance.
-                    </p>
-                    <div class="mt-4 p-4 bg-teal-100 rounded-lg">
-                        <h3 class="text-xl font-semibold mb-2 text-teal-800">Did You Know? 🤔</h3>
-                        <p>
-                            The sound of a whale's call can travel for hundreds of miles underwater! That's because sound travels faster in water than in the air.
-                        </p>
-                    </div>
-                `,
-                day: 2
-            }
-        ];
+    <!-- Bottom nav -->
+    <div class="flex items-center justify-between px-[clamp(12px,3.5vh,32px)] pb-[clamp(12px,3.5vh,32px)]">
+      <button id="prev-button" class="px-6 py-3 rounded-full font-bold text-white transition transform hover:scale-105 bg-gray-600 disabled:bg-gray-400" disabled>Previous</button>
+      <div id="slide-counter" class="text-[clamp(14px,2vw,20px)] font-semibold text-gray-500"></div>
+      <button id="next-button" class="px-6 py-3 rounded-full font-bold text-white transition transform hover:scale-105 bg-purple-600 disabled:bg-gray-400">Next</button>
+    </div>
+  </div>
 
-        // JavaScript logic for the presentation
-        let currentSlideIndex = 0;
-        let timer = 60;
-        let timerInterval = null;
-        let isTimerRunning = false;
+  <script>
+    // Full deck — Day 3 (6 slides) + Day 4 (5 slides) = 11 slides
+    const slides = [
+      // -------- DAY 3 --------
+      {
+        title: "Day 3 — Warm Up",
+        content: `
+          <div class='slide max-w-[1200px]'>
+            <h2 class='mb-2 text-emerald-600'>✍️ Warm Up</h2>
+            <p>Find your <strong>journal</strong>. Add a heading: <em>Name · Date · Topic</em>.</p>
+            <div class='mt-4 p-6 bg-emerald-50 rounded-2xl border border-emerald-100 inline-block'>
+              <p>Write <strong>3 things</strong> you remember from last week’s science class. When time is up: <strong>Think–Pair–Share</strong>.</p>
+            </div>
+          </div>
+        `,
+        day: 3,
+        hasTimer: true,
+        defaultMin: 5
+      },
+      {
+        title: "Day 3 — Share Out",
+        content: `
+          <div class='slide max-w-[1400px]'>
+            <h2 class='mb-2 text-indigo-600'>💬 Let’s Share!</h2>
+            <p>Raise your hand and share one big idea you wrote. We’ll build a class list of what we remember!</p>
+            <!-- Blank green board (gentle STEM color) -->
+            <div class='board mt-5 bg-green-100 border border-green-300'></div>
+          </div>
+        `,
+        day: 3
+      },
+      {
+        title: "Day 3 — Our Class Contract",
+        content: `
+          <div class='slide max-w-[1200px]'>
+            <h2 class='mb-2 text-sky-600'>📜 Our Promises</h2>
+            <p>These promises keep our room safe, fair, and fun. Which one matters most to you?</p>
+            <ul class='list-disc pl-6 mt-4 space-y-2'>
+              <li>👀👂✋ Listen with eyes, ears, and hands.</li>
+              <li>💡 Share and respect everyone’s ideas.</li>
+              <li>🎨 Use supplies safely and wisely.</li>
+              <li>🤝 Be kind and respect space.</li>
+              <li>🌟 Treat others how you want to be treated.</li>
+            </ul>
+            <p class='mt-4'><em>Write on your desk:</em> Which promise is most important and why?</p>
+          </div>
+        `,
+        day: 3
+      },
+      {
+        title: "Day 3 — Homework",
+        content: `
+          <div class='slide max-w-[1200px]'>
+            <h2 class='mb-2 text-purple-600'>📘 Homework</h2>
+            <p>Take home your copy of our Class Contract. <strong>Sign it</strong> and bring it back tomorrow!</p>
+          </div>
+        `,
+        day: 3
+      },
+      {
+        title: "Day 3 — STEM Lab Norms",
+        content: `
+          <div class='slide max-w-[1200px]'>
+            <h2 class='mb-2 text-amber-600'>🧪 STEM Lab Norms</h2>
+            <ul class='list-disc pl-6 mt-3 space-y-2'>
+              <li><strong>Supplies:</strong> Return items to the labeled bins.</li>
+              <li><strong>Bathroom:</strong> Cross <em>two fingers</em> silently to ask.</li>
+              <li><strong>Water & Food:</strong> Water stays <em>outside</em>. No food in the lab.</li>
+              <li><strong>Cleanup:</strong> Clear desks, sort tools, check floor, push in chairs.</li>
+              <li><strong>Safety:</strong> Walk, use tools properly, respect space.</li>
+            </ul>
+          </div>
+        `,
+        day: 3
+      },
+      {
+        title: "Day 3 — Digital Citizenship: It's Cool to Be Kind",
+        content: `
+          <div class='slide max-w-[1200px]'>
+            <h2 class='mb-2 text-rose-600'>💗 It's Cool to Be Kind</h2>
+            <p>Your words online can change the picture. Choose kindness first.</p>
+            <ul class='list-disc pl-6 mt-3 space-y-2'>
+              <li>Think: Would you say it face-to-face?</li>
+              <li>Post Positives: Compliment, encourage, include.</li>
+              <li>Pause & Reread before you send.</li>
+              <li>If someone’s hurt online, leave a kind comment and tell a trusted adult.</li>
+            </ul>
+          </div>
+        `,
+        day: 3
+      },
 
-        // Get DOM elements
-        const slideContentDiv = document.getElementById('slide-content');
-        const slideCounterSpan = document.getElementById('slide-counter');
-        const dayDisplayDiv = document.getElementById('day-display');
-        const prevButton = document.getElementById('prev-button');
-        const nextButton = document.getElementById('next-button');
-        const timerControls = document.getElementById('interactive-controls');
-        const timerButton = document.getElementById('timer-button');
-        const timerDisplay = document.getElementById('timer-display');
-        const timerResetButton = document.getElementById('timer-reset-button');
+      // -------- DAY 4 --------
+      {
+        title: "Day 4 — Warm Up",
+        content: `
+          <div class='slide max-w-[1200px]'>
+            <h2 class='mb-2 text-emerald-600'>✍️ Warm Up</h2>
+            <p>In your journal: Write your heading. Then add <strong>one reflection</strong> about our contract and <strong>one observation</strong> about bridges — how they’re able to hold so many cars and people.</p>
+          </div>
+        `,
+        day: 4,
+        hasTimer: true,
+        defaultMin: 5
+      },
+      {
+        title: "Day 4 — Project Challenge: Build a Bridge! + Roles",
+        content: `
+          <div class='slide max-w-[1200px]'>
+            <h2 class='mb-2 text-indigo-600'>⚙️ Build a Bridge!</h2>
+            <p>Your mission: build a bridge strong enough to hold at least <strong>10 textbooks</strong>.</p>
+            <ul class='list-disc pl-6 mt-3 space-y-2'>
+              <li><strong>Supplies:</strong> cardboard, straws, tape, string, paperclips.</li>
+              <li><strong>Time:</strong> 20 minutes to design and build. ⏱️</li>
+              <li><strong>Team Roles (pick one):</strong> 🧠 Designer · 🏗️ Builder · 🧲 Stabilizer · ⏱️ Timekeeper</li>
+              <li>Test together and cheer for every team!</li>
+            </ul>
+          </div>
+        `,
+        day: 4,
+        hasTimer: true,
+        defaultMin: 20
+      },
+      {
+        title: "Day 4 — Reflection & Bridge Rubric",
+        content: `
+          <div class='slide max-w-[1200px]'>
+            <h2 class='mb-2 text-fuchsia-600'>💬 Reflection</h2>
+            <ul class='list-disc pl-6 mt-3 space-y-2'>
+              <li>Did your team follow our promises?</li>
+              <li>What worked well in your design?</li>
+              <li>What would you try differently next time?</li>
+            </ul>
+            <h2 class='mt-6 mb-2 text-green-600'>📏 Bridge Rubric</h2>
+            <ul class='list-disc pl-6 mt-3 space-y-2'>
+              <li><strong>3 pts — Strength:</strong> Strongest bridge (holds the most weight) using materials effectively.</li>
+              <li><strong>2 pts — Stability:</strong> Remains freestanding for <strong>10 seconds</strong> during testing.</li>
+              <li><strong>1 pt — Teamwork:</strong> Roles used respectfully; positive, on-task collaboration.</li>
+            </ul>
+          </div>
+        `,
+        day: 4
+      },
+      {
+        title: "Day 4 — Digital Citizenship: When in Doubt, Talk It Out",
+        content: `
+          <div class='slide max-w-[1200px]'>
+            <h2 class='mb-2 text-rose-600'>🛡️ When in Doubt, Talk It Out</h2>
+            <ul class='list-disc pl-6 mt-3 space-y-2'>
+              <li>See something confusing or mean online? <strong>Pause.</strong></li>
+              <li>Tell a trusted adult and a class helper.</li>
+              <li>Be brave and be a helper — include others, report, and support.</li>
+            </ul>
+          </div>
+        `,
+        day: 4
+      },
+      {
+        title: "Day 4 — Clean Up Game",
+        content: `
+          <div class='slide max-w-[1200px]'>
+            <h2 class='mb-2 text-amber-600'>🧹 Clean Up Game</h2>
+            <p>After projects: return supplies, stack chairs, and reset the room. Which group finishes first (and neatest)?</p>
+          </div>
+        `,
+        day: 4,
+        hasTimer: true,
+        defaultMin: 3
+      }
+    ];
 
-        // Function to render the current slide
-        function showSlide(index) {
-            const slide = slides[index];
-            slideContentDiv.innerHTML = slide.content;
-            slideCounterSpan.textContent = `Slide ${index + 1} of ${slides.length}`;
-            dayDisplayDiv.textContent = `Day ${slide.day}`;
-            
-            // Show or hide the timer based on the slide
-            if (slide.hasTimer) {
-                timerControls.style.display = 'flex';
-            } else {
-                timerControls.style.display = 'none';
-                resetTimer();
-            }
+    // ---------------- State & DOM refs ----------------
+    let currentSlideIndex = 0;
+    let isTimerRunning = false;
+    let secondsLeft = 0;
+    let timerInterval = null;
 
-            // Update button states
-            prevButton.disabled = index === 0;
-            nextButton.disabled = index === slides.length - 1;
-            prevButton.style.backgroundColor = index === 0 ? '#9CA3AF' : '#6B7280';
-            nextButton.style.backgroundColor = index === slides.length - 1 ? '#9CA3AF' : '#8B5CF6';
-        }
+    const slideContentDiv = document.getElementById('slide-content');
+    const slideCounterSpan = document.getElementById('slide-counter');
+    const prevButton = document.getElementById('prev-button');
+    const nextButton = document.getElementById('next-button');
+    const timerControls = document.getElementById('interactive-controls');
+    const timerButton = document.getElementById('timer-button');
+    const timerDisplay = document.getElementById('timer-display');
+    const timerResetButton = document.getElementById('timer-reset-button');
+    const minutesRange = document.getElementById('minutes-range');
+    const minutesLabel = document.getElementById('minutes-label');
 
-        // Timer functions
-        function startTimer() {
-            if (!isTimerRunning) {
-                isTimerRunning = true;
-                timerButton.textContent = 'Pause Timer';
-                timerButton.style.backgroundColor = '#EF4444';
-                timerInterval = setInterval(() => {
-                    if (timer > 0) {
-                        timer--;
-                        timerDisplay.textContent = `${timer}s`;
-                    } else {
-                        stopTimer();
-                    }
-                }, 1000);
-            } else {
-                stopTimer();
-            }
-        }
+    function fmt(sec){ const m = Math.floor(sec/60); const s = sec%60; return `${m}:${String(s).padStart(2,'0')}`; }
 
-        function stopTimer() {
-            isTimerRunning = false;
-            timerButton.textContent = 'Start Timer';
-            timerButton.style.backgroundColor = '#22C55E';
-            clearInterval(timerInterval);
-        }
+    function beep(){
+      try{
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.type = 'sine'; o.frequency.value = 880; o.connect(g); g.connect(ctx.destination);
+        g.gain.setValueAtTime(0.001, ctx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.3, ctx.currentTime + 0.01);
+        o.start(); setTimeout(()=>{ g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.3); o.stop(ctx.currentTime + 0.35); }, 220);
+      }catch(e){}
+    }
 
-        function resetTimer() {
-            stopTimer();
-            timer = 60;
-            timerDisplay.textContent = `${timer}s`;
-        }
+    function setSecondsFromSlider(){ secondsLeft = Number(minutesRange.value) * 60; timerDisplay.textContent = fmt(secondsLeft); minutesLabel.textContent = minutesRange.value; }
 
-        // Event listeners for navigation and timer
-        prevButton.addEventListener('click', () => {
-            if (currentSlideIndex > 0) {
-                currentSlideIndex--;
-                showSlide(currentSlideIndex);
-            }
-        });
+    function showSlide(index){
+      const slide = slides[index];
+      slideContentDiv.innerHTML = slide.content;
+      slideCounterSpan.textContent = `Slide ${index + 1} of ${slides.length}`;
 
-        nextButton.addEventListener('click', () => {
-            if (currentSlideIndex < slides.length - 1) {
-                currentSlideIndex++;
-                showSlide(currentSlideIndex);
-            }
-        });
+      if(slide.hasTimer){
+        timerControls.style.display = 'flex';
+        minutesRange.value = slide.defaultMin || 5;
+        setSecondsFromSlider();
+        stopTimer();
+      } else {
+        timerControls.style.display = 'none';
+        stopTimer();
+      }
+
+      prevButton.disabled = index === 0;
+      nextButton.disabled = index === slides.length - 1;
+    }
+
+    function tick(){ if(secondsLeft <= 0){ stopTimer(); timerDisplay.textContent = '0:00'; beep(); return; } secondsLeft -= 1; timerDisplay.textContent = fmt(secondsLeft); }
+
+    function startTimer(){ if(isTimerRunning){ stopTimer(); return; } isTimerRunning = true; timerButton.textContent = 'Pause'; timerButton.classList.remove('bg-green-500','hover:bg-green-600'); timerButton.classList.add('bg-red-500','hover:bg-red-600'); if(secondsLeft <= 0){ setSecondsFromSlider(); } timerInterval = setInterval(tick, 1000); }
+
+    function stopTimer(){ isTimerRunning = false; timerButton.textContent = 'Start'; timerButton.classList.remove('bg-red-500','hover:bg-red-600'); timerButton.classList.add('bg-green-500','hover:bg-green-600'); clearInterval(timerInterval); timerInterval = null; }
+
+    function resetTimer(){ stopTimer(); setSecondsFromSlider(); }
+
+    // Events
+    prevButton.addEventListener('click', () => { if(currentSlideIndex > 0){ currentSlideIndex--; showSlide(currentSlideIndex); } });
+    nextButton.addEventListener('click', () => { if(currentSlideIndex < slides.length - 1){ currentSlideIndex++; showSlide(currentSlideIndex); } });
+    timerButton.addEventListener('click', startTimer);
+    timerResetButton.addEventListener('click', resetTimer);
+    minutesRange.addEventListener('input', () => { minutesLabel.textContent = minutesRange.value; if(!isTimerRunning){ setSecondsFromSlider(); } });
+
+    // Init
+    document.addEventListener('DOMContentLoaded', () => showSlide(currentSlideIndex));
+  </script>
+</body>
+</html>
+
 
         timerButton.addEventListener('click', startTimer);
         timerResetButton.addEventListener('click', resetTimer);
