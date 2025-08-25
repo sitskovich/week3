@@ -1,0 +1,312 @@
+import React, { useState, useEffect } from 'react';
+
+// Main application component for the STEM presentation.
+const App = () => {
+  // Use state to keep track of the current slide number.
+  const [currentSlide, setCurrentSlide] = useState(0);
+  // Use state for the timer, initialized to 60 seconds for a quick activity.
+  const [timer, setTimer] = useState(60);
+  // State to control if the timer is running.
+  const [isTimerRunning, setIsTimerRunning] = useState(false);
+
+  // useEffect hook to handle the timer logic.
+  useEffect(() => {
+    let interval = null;
+    // Check if the timer is running and the time is greater than 0.
+    if (isTimerRunning && timer > 0) {
+      // Set up a new interval to decrement the timer every second.
+      interval = setInterval(() => {
+        setTimer(prevTimer => prevTimer - 1);
+      }, 1000);
+    } else if (timer === 0) {
+      // If the timer hits zero, stop it.
+      clearInterval(interval);
+      setIsTimerRunning(false);
+    }
+    // Clean up the interval when the component unmounts or dependencies change.
+    return () => clearInterval(interval);
+  }, [isTimerRunning, timer]);
+
+  // Function to reset the timer to a default value.
+  const resetTimer = () => {
+    setIsTimerRunning(false);
+    setTimer(60);
+  };
+
+  // Function to start or pause the timer.
+  const toggleTimer = () => {
+    setIsTimerRunning(!isTimerRunning);
+  };
+
+  // Function to go to the next slide.
+  const goToNextSlide = () => {
+    setCurrentSlide(currentSlide + 1);
+    resetTimer(); // Reset timer for the new slide.
+  };
+
+  // Function to go to the previous slide.
+  const goToPreviousSlide = () => {
+    if (currentSlide > 0) {
+      setCurrentSlide(currentSlide - 1);
+      resetTimer(); // Reset timer for the new slide.
+    }
+  };
+
+  // An array of all the presentation slides.
+  const slides = [
+    // DAY 1: Using Energy Transformations
+    {
+      title: "Slide 1: Welcome!",
+      content: (
+        <>
+          <h2 className="text-3xl font-bold mb-4 text-emerald-600">✨ Let's Go on a STEM Adventure! ✨</h2>
+          <p className="text-gray-700">
+            Welcome, amazing scientists and engineers! Today, we're going on a mission to an imaginary spaceship that's in danger!
+            Our job is to figure out how to warn the astronauts about a possible asteroid collision.
+          </p>
+          <div className="mt-4 p-4 bg-emerald-100 rounded-lg">
+            <h3 className="text-xl font-semibold mb-2 text-emerald-800">🚀 Warm-up Challenge!</h3>
+            <p>
+              Hold up a flashlight. What gives the flashlight the power to shine?
+              Think-Pair-Share: Turn to a partner and talk about it for just one minute. What makes the light turn on?
+            </p>
+          </div>
+        </>
+      ),
+      day: 1
+    },
+    {
+      title: "Slide 2: Energy All Around Us",
+      content: (
+        <>
+          <h2 className="text-3xl font-bold mb-4 text-emerald-600">What is Energy? 💡</h2>
+          <p className="text-gray-700">
+            Energy is the power that makes things happen! It comes in different forms, like light energy, sound energy, and motion energy.
+            Did you know that energy can never be created or destroyed? It just changes from one form to another! That's called a **transformation**.
+          </p>
+          <div className="mt-4 p-4 bg-yellow-100 rounded-lg">
+            <h3 className="text-xl font-semibold mb-2 text-yellow-800">Visuals:</h3>
+            <p>
+              Show a picture of a solar panel. Explain how it takes light energy from the sun and turns it into electrical energy to power a house.
+              You could also show a picture of a person riding a bicycle. The energy from their food turns into motion energy!
+            </p>
+          </div>
+        </>
+      ),
+      day: 1
+    },
+    {
+      title: "Slide 3: Energy in a Collision",
+      content: (
+        <>
+          <h2 className="text-3xl font-bold mb-4 text-emerald-600">BAM! Energy in a Crash! 💥</h2>
+          <p className="text-gray-700">
+            When two things collide, like our spaceship and an asteroid, energy is transferred.
+            The energy of the moving objects changes into other forms. A loud crash makes **sound energy**, and a bright flash makes **light energy**!
+          </p>
+          <div className="mt-4 p-4 bg-red-100 rounded-lg">
+            <h3 className="text-xl font-semibold mb-2 text-red-800">🛠️ Interactive Challenge: Build a Bumper!</h3>
+            <p>
+              Your mission, should you choose to accept it, is to build a simple bumper out of building blocks or Vex Go parts.
+              Your challenge is to build a wall that can stop a rolling toy car. Watch how the energy from the car transfers to your wall!
+            </p>
+            <div className="flex items-center justify-center mt-4">
+              <button onClick={toggleTimer} className={`px-6 py-2 rounded-full font-bold text-white transition duration-300 ${isTimerRunning ? 'bg-rose-500 hover:bg-rose-600' : 'bg-green-500 hover:bg-green-600'}`}>
+                {isTimerRunning ? 'Pause Timer' : 'Start Timer'}
+              </button>
+              <span className="text-4xl ml-4 font-mono text-gray-800 w-20 text-center">{timer}s</span>
+            </div>
+          </div>
+        </>
+      ),
+      day: 1
+    },
+    {
+      title: "Slide 4: Real-World Warning Systems",
+      content: (
+        <>
+          <h2 className="text-3xl font-bold mb-4 text-emerald-600">Making an Awesome Alarm! 🚨</h2>
+          <p className="text-gray-700">
+            The warning system we're building is a lot like things we see every day!
+            Think about a smoke detector. It senses smoke (a form of energy change) and transforms that information into a loud sound (another energy form) to warn us!
+            Emergency lights on a fire truck or ambulance are another great example.
+          </p>
+          <div className="mt-4 p-4 bg-cyan-100 rounded-lg">
+            <h3 className="text-xl font-semibold mb-2 text-cyan-800">💡 Let's Brainstorm!</h3>
+            <p>
+              On a whiteboard, let's list different kinds of alarms we've seen. How do they work? What kind of energy do they use and create?
+            </p>
+          </div>
+        </>
+      ),
+      day: 1
+    },
+    {
+      title: "Slide 5: Day 1 Wrap-up",
+      content: (
+        <>
+          <h2 className="text-3xl font-bold mb-4 text-emerald-600">Recap: Day 1 Mission Complete! ✅</h2>
+          <p className="text-gray-700">
+            Today, we learned about **energy transformations**! We know that energy can't be created or destroyed, but it can change from one form to another.
+            We also saw how this happens in collisions and in real-world warning systems.
+          </p>
+          <div className="mt-4 p-4 bg-purple-100 rounded-lg">
+            <h3 className="text-xl font-semibold mb-2 text-purple-800">Did You Know? 🤔</h3>
+            <p>
+              The energy released from a lightning bolt is enough to power a 100-watt light bulb for more than three months!
+            </p>
+          </div>
+        </>
+      ),
+      day: 1
+    },
+    // DAY 2: Communicating Using Wave Energy
+    {
+      title: "Slide 6: Welcome Back!",
+      content: (
+        <>
+          <h2 className="text-3xl font-bold mb-4 text-indigo-600">Hello, Wavelength Warriors! 🌊</h2>
+          <p className="text-gray-700">
+            Yesterday we talked about energy. Today, we're going to use energy to communicate over a distance.
+            Our mission is to create an emergency signaling system that uses light or sound to get a message to people far away.
+          </p>
+          <div className="mt-4 p-4 bg-indigo-100 rounded-lg">
+            <h3 className="text-xl font-semibold mb-2 text-indigo-800">👂 Warm-up: Quick Poll!</h3>
+            <p>
+              Show of hands: Who has ever used a walkie-talkie? What about a laser pointer?
+              How do these things send a message?
+            </p>
+          </div>
+        </>
+      ),
+      day: 2
+    },
+    {
+      title: "Slide 7: Waves are Everywhere!",
+      content: (
+        <>
+          <h2 className="text-3xl font-bold mb-4 text-indigo-600">All About Waves! 🌀</h2>
+          <p className="text-gray-700">
+            Waves are a special kind of motion that can carry energy from one place to another.
+            Sound waves let us hear music, and light waves let us see the world!
+            Every wave has a **wavelength** (the distance between waves) and an **amplitude** (how tall the wave is).
+          </p>
+          <div className="mt-4 p-4 bg-sky-100 rounded-lg">
+            <h3 className="text-xl font-semibold mb-2 text-sky-800">Visuals:</h3>
+            <p>
+              Draw two waves on the whiteboard. One with a long wavelength and small amplitude, and one with a short wavelength and large amplitude.
+              Ask students to describe the differences they see.
+            </p>
+          </div>
+        </>
+      ),
+      day: 2
+    },
+    {
+      title: "Slide 8: Signaling with Light and Sound",
+      content: (
+        <>
+          <h2 className="text-3xl font-bold mb-4 text-indigo-600">Sending a Message! 📢</h2>
+          <p className="text-gray-700">
+            For our emergency signal, we need to choose between light and sound.
+            Light waves travel incredibly fast, and we can use mirrors or flashlights to send signals, like Morse code.
+            Sound waves can travel through the air, and we can use loud noises or different patterns of sound to communicate.
+          </p>
+          <div className="mt-4 p-4 bg-orange-100 rounded-lg">
+            <h3 className="text-xl font-semibold mb-2 text-orange-800">🛠️ Interactive Challenge: Make a Signal!</h3>
+            <p>
+              Let's make a simple sound or light signal. Grab your maracas or flashlights!
+              Can you create a code using short and long sounds, or short and long flashes? Try to send a secret message to a friend across the room.
+            </p>
+            <div className="flex items-center justify-center mt-4">
+              <button onClick={toggleTimer} className={`px-6 py-2 rounded-full font-bold text-white transition duration-300 ${isTimerRunning ? 'bg-rose-500 hover:bg-rose-600' : 'bg-green-500 hover:bg-green-600'}`}>
+                {isTimerRunning ? 'Pause Timer' : 'Start Timer'}
+              </button>
+              <span className="text-4xl ml-4 font-mono text-gray-800 w-20 text-center">{timer}s</span>
+            </div>
+          </div>
+        </>
+      ),
+      day: 2
+    },
+    {
+      title: "Slide 9: Real-World Communication",
+      content: (
+        <>
+          <h2 className="text-3xl font-bold mb-4 text-indigo-600">Messages Everywhere! 📱</h2>
+          <p className="text-gray-700">
+            All of our modern technology, like cell phones and the internet, uses waves to communicate!
+            When you send a text message, it's turned into a digital signal that travels as a wave through the air to a cell tower and then to your friend's phone.
+            Our brains even use tiny electrical waves to send messages to our eyes and ears!
+          </p>
+          <div className="mt-4 p-4 bg-lime-100 rounded-lg">
+            <h3 className="text-xl font-semibold mb-2 text-lime-800">🌐 Connection:</h3>
+            <p>
+              Talk about how light reflects off objects and enters our eyes. What happens when you look in a mirror?
+            </p>
+          </div>
+        </>
+      ),
+      day: 2
+    },
+    {
+      title: "Slide 10: Day 2 Wrap-up",
+      content: (
+        <>
+          <h2 className="text-3xl font-bold mb-4 text-indigo-600">Recap: Day 2 Mission Accomplished! ✅</h2>
+          <p className="text-gray-700">
+            You are now experts at using waves to communicate! We learned about **wavelength** and **amplitude**, and how light and sound waves can carry important messages over a distance.
+          </p>
+          <div className="mt-4 p-4 bg-teal-100 rounded-lg">
+            <h3 className="text-xl font-semibold mb-2 text-teal-800">Did You Know? 🤔</h3>
+            <p>
+              The sound of a whale's call can travel for hundreds of miles underwater! That's because sound travels faster in water than in the air.
+            </p>
+          </div>
+        </>
+      ),
+      day: 2
+    }
+  ];
+
+  // Tailwind CSS classes for the main container and content.
+  const containerClasses = "flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 p-6";
+  const cardClasses = "bg-white p-8 rounded-2xl shadow-xl max-w-4xl w-full text-center transition-all duration-500 ease-in-out";
+  const buttonClasses = "px-6 py-3 rounded-full font-bold text-white transition-all duration-300 transform hover:scale-105";
+
+  // Render the current slide's content.
+  return (
+    <div className={containerClasses}>
+      <div className={cardClasses}>
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-4xl font-extrabold text-indigo-800">STEM Presentation</h1>
+          <div className="text-xl font-semibold text-gray-600">Day {slides[currentSlide].day}</div>
+        </div>
+        <div className="mb-6">
+          {slides[currentSlide].content}
+        </div>
+        <div className="flex justify-between items-center mt-6">
+          <button
+            onClick={goToPreviousSlide}
+            className={`${buttonClasses} bg-gray-400 hover:bg-gray-500`}
+            disabled={currentSlide === 0}
+          >
+            Previous
+          </button>
+          <div className="text-xl font-semibold text-gray-500">
+            Slide {currentSlide + 1} of {slides.length}
+          </div>
+          <button
+            onClick={goToNextSlide}
+            className={`${buttonClasses} bg-purple-600 hover:bg-purple-700`}
+            disabled={currentSlide === slides.length - 1}
+          >
+            Next
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default App;
